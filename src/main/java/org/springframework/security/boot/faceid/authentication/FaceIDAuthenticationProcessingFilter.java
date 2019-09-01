@@ -68,8 +68,8 @@ public class FaceIDAuthenticationProcessingFilter extends AbstractAuthentication
 			
 		 	// 没有提供人脸数据
 			if(face == null) {
-				logger.debug("No face data found in request.");
-				throw new AuthenticationFaceNotFoundException("No face data found in request.");
+				logger.debug("No face image found in request.");
+				throw new AuthenticationFaceNotFoundException("No face image found in request.");
 			}
 			
 			AbstractAuthenticationToken authRequest = new FaceIDAuthenticationToken(face.getInputStream());

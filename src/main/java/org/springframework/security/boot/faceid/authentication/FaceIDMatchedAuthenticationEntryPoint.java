@@ -28,10 +28,8 @@ import org.springframework.security.boot.biz.SpringSecurityBizMessageSource;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationEntryPoint;
 import org.springframework.security.boot.biz.exception.AuthResponse;
 import org.springframework.security.boot.biz.exception.AuthResponseCode;
-import org.springframework.security.boot.identity.exception.IdentityCodeExpiredException;
-import org.springframework.security.boot.identity.exception.IdentityCodeIncorrectException;
-import org.springframework.security.boot.identity.exception.IdentityCodeInvalidException;
-import org.springframework.security.boot.identity.exception.IdentityCodeNotFoundException;
+import org.springframework.security.boot.faceid.exception.AuthenticationFaceIDNotFoundException;
+import org.springframework.security.boot.faceid.exception.AuthenticationFaceNotFoundException;
 import org.springframework.security.boot.utils.SubjectUtils;
 import org.springframework.security.core.AuthenticationException;
 
@@ -43,9 +41,8 @@ public class FaceIDMatchedAuthenticationEntryPoint implements MatchedAuthenticat
 	
 	@Override
 	public boolean supports(AuthenticationException e) {
-		return SubjectUtils.isAssignableFrom(e.getClass(), IdentityCodeNotFoundException.class,
-				IdentityCodeExpiredException.class, IdentityCodeIncorrectException.class,
-				IdentityCodeInvalidException.class);
+		return SubjectUtils.isAssignableFrom(e.getClass(), AuthenticationFaceNotFoundException.class,
+				AuthenticationFaceIDNotFoundException.class);
 	}
 
 	@Override
@@ -55,18 +52,12 @@ public class FaceIDMatchedAuthenticationEntryPoint implements MatchedAuthenticat
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 		
-		if (e instanceof IdentityCodeNotFoundException) {
+		if (e instanceof AuthenticationFaceNotFoundException) {
 			JSONObject.writeJSONString(response.getWriter(), AuthResponse.of(AuthResponseCode.SC_AUTHZ_CODE_REQUIRED.getCode(), 
 					messages.getMessage(AuthResponseCode.SC_AUTHZ_CODE_REQUIRED.getMsgKey(), e.getMessage())));
-		} else if (e instanceof IdentityCodeExpiredException) {
+		} else if (e instanceof AuthenticationFaceIDNotFoundException) {
 			JSONObject.writeJSONString(response.getWriter(), AuthResponse.of(AuthResponseCode.SC_AUTHZ_CODE_EXPIRED.getCode(), 
 					messages.getMessage(AuthResponseCode.SC_AUTHZ_CODE_EXPIRED.getMsgKey(), e.getMessage())));
-		} else if (e instanceof IdentityCodeInvalidException) {
-			JSONObject.writeJSONString(response.getWriter(), AuthResponse.of(AuthResponseCode.SC_AUTHZ_CODE_INVALID.getCode(), 
-					messages.getMessage(AuthResponseCode.SC_AUTHZ_CODE_INVALID.getMsgKey(), e.getMessage())));
-		} else if (e instanceof IdentityCodeIncorrectException) {
-			JSONObject.writeJSONString(response.getWriter(), AuthResponse.of(AuthResponseCode.SC_AUTHZ_CODE_INCORRECT.getCode(), 
-					messages.getMessage(AuthResponseCode.SC_AUTHZ_CODE_INCORRECT.getMsgKey(), e.getMessage())));
 		} else {
 			JSONObject.writeJSONString(response.getWriter(), AuthResponse.of(AuthResponseCode.SC_AUTHZ_FAIL.getCode(),
 					messages.getMessage(AuthResponseCode.SC_AUTHZ_FAIL.getMsgKey())));

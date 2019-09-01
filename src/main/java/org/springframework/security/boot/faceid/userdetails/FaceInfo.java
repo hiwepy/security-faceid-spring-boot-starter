@@ -15,11 +15,13 @@
  */
 package org.springframework.security.boot.faceid.userdetails;
 
+import lombok.Data;
+
 /**
  * TODO
  * @author 		： <a href="https://github.com/vindell">wandl</a>
  */
-
+@Data
 public class FaceInfo {
 	
 	/**

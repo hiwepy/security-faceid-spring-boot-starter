@@ -10,14 +10,14 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.boot.biz.userdetails.SecurityPrincipal;
 import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
+import org.springframework.security.boot.faceid.exception.AuthenticationFaceIDNotFoundException;
+import org.springframework.security.boot.faceid.userdetails.FaceInfo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 public class FaceIDAuthenticationProvider implements AuthenticationProvider {
 	
@@ -55,12 +55,16 @@ public class FaceIDAuthenticationProvider implements AuthenticationProvider {
 			logger.debug("No principal found in request.");
 			throw new BadCredentialsException("No principal found in request.");
 		}
-		
-        String faceId = getFaceRecognitionProvider().
         
-        authentication = new FaceIDAuthenticationToken(principal);
+        // load face info by face image
+        FaceInfo faceInfo = getFaceRecognitionProvider().loadFaceInfo(authentication);
+        if (faceInfo == null) {
+			logger.debug("No face info found by face image.");
+			throw new AuthenticationFaceIDNotFoundException("No face info found by face image.");
+		}
         
-		UserDetails ud = getUserDetailsService().loadUserDetails(authentication);
+        // load user details by face info
+		UserDetails ud = getUserDetailsService().loadUserDetails(new FaceIDAuthenticationToken(faceInfo));
         // User Status Check
         getUserDetailsChecker().check(ud);
         

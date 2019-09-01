@@ -15,6 +15,9 @@
  */
 package org.springframework.security.boot.faceid.authentication;
 
+import org.springframework.security.boot.faceid.userdetails.FaceInfo;
+import org.springframework.security.core.Authentication;
+
 /**
  * TODO
  * @author 		： <a href="https://github.com/vindell">wandl</a>
@@ -22,6 +25,6 @@ package org.springframework.security.boot.faceid.authentication;
 
 public interface FaceRecognitionProvider {
 
-	String 
+	FaceInfo loadFaceInfo(Authentication authentication);
 	
 }

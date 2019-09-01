@@ -408,6 +408,13 @@
 	
 	<dependencies>
 		
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <scope>compile</scope>
+		</dependency>
+		
 		<!-- Java Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -467,19 +474,6 @@
 			<groupId>com.github.vindell</groupId>
 			<artifactId>spring-boot-starter-security-biz</artifactId>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.github.vindell</groupId>
-			<artifactId>spring-boot-starter-arcface</artifactId>
-		</dependency>
-	    <dependency>
-	    	<groupId>com.github.vindell</groupId>
-			<artifactId>spring-boot-starter-baiduapi</artifactId>
-	    </dependency>
-	    <!-- <dependency>
-	    	<groupId>com.github.vindell</groupId>
-			<artifactId>spring-boot-starter-opencv</artifactId>
-	    </dependency> -->
 		
 	</dependencies>
 
