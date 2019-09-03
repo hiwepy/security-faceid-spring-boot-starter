@@ -1,6 +1,5 @@
 package org.springframework.security.boot;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,7 +9,7 @@ import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapt
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
 import org.springframework.security.boot.faceid.authentication.FaceIDMatchedAuthenticationEntryPoint;
 import org.springframework.security.boot.faceid.authentication.FaceIDMatchedAuthenticationFailureHandler;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.boot.faceid.authentication.FaceRecognitionProvider;
 
 @Configuration
 @AutoConfigureBefore(SecurityBizAutoConfiguration.class)
@@ -18,23 +17,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableConfigurationProperties({ SecurityFaceIDProperties.class })
 public class SecurityFaceIDAutoConfiguration {
 
-	@Autowired
-	private SecurityFaceIDProperties openidProperties;
-
 	@Bean
 	public FaceIDMatchedAuthenticationEntryPoint idcMatchedAuthenticationEntryPoint() {
 		return new FaceIDMatchedAuthenticationEntryPoint();
 	}
-	
+
 	@Bean
 	public FaceIDMatchedAuthenticationFailureHandler idcMatchedAuthenticationFailureHandler() {
 		return new FaceIDMatchedAuthenticationFailureHandler();
 	}
-	 
+
 	@Bean
-	public FaceIDAuthenticationProvider idcCodeAuthenticationProvider(
-			UserDetailsServiceAdapter userDetailsService, PasswordEncoder passwordEncoder) {
-		return new FaceIDAuthenticationProvider(userDetailsService, passwordEncoder);
+	public FaceIDAuthenticationProvider idcCodeAuthenticationProvider(FaceRecognitionProvider faceRecognitionProvider,
+			UserDetailsServiceAdapter userDetailsService) {
+		return new FaceIDAuthenticationProvider(faceRecognitionProvider, userDetailsService);
 	}
-    
+
 }
