@@ -62,30 +62,21 @@ public class FaceIDAuthenticationProcessingFilter extends AbstractAuthentication
 					"Authentication method not supported. Request method:" + request.getMethod()));
 		}
         
-        try {
 
-			Part face = request.getPart(getFaceParameter());
-			
-		 	// 没有提供人脸数据
-			if(face == null) {
-				logger.debug("No face image found in request.");
-				throw new AuthenticationFaceNotFoundException("No face image found in request.");
-			}
-			
-			AbstractAuthenticationToken authRequest = new FaceIDAuthenticationToken(face.getInputStream());
-
-			// Allow subclasses to set the "details" property
-			setDetails(request, authRequest);
-
-			return this.getAuthenticationManager().authenticate(authRequest);
-
-		} catch (JsonParseException e) {
-			throw new InternalAuthenticationServiceException(e.getMessage());
-		} catch (JsonMappingException e) {
-			throw new InternalAuthenticationServiceException(e.getMessage());
-		} catch (IOException e) {
-			throw new InternalAuthenticationServiceException(e.getMessage());
+		Part face = request.getPart(getFaceParameter());
+		
+	 	// 没有提供人脸数据
+		if(face == null) {
+			logger.debug("No face image found in request.");
+			throw new AuthenticationFaceNotFoundException("No face image found in request.");
 		}
+		
+		AbstractAuthenticationToken authRequest = new FaceIDAuthenticationToken(face.getInputStream());
+
+		// Allow subclasses to set the "details" property
+		setDetails(request, authRequest);
+
+		return this.getAuthenticationManager().authenticate(authRequest);
 
     }
 
