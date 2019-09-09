@@ -64,7 +64,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 				SecurityFaceIDProperties faceIDProperties,
 				ObjectProvider<FaceIDAuthenticationProvider> faceIDAuthenticationProvider,
 				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
-   				@Qualifier("jwtAuthenticationFailureHandler") ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
+   				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
 			this.bizProperties = bizProperties;
