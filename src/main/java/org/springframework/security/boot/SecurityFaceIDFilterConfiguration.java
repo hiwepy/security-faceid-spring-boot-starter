@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
@@ -18,7 +19,6 @@ import org.springframework.security.boot.biz.authentication.PostRequestAuthentic
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProcessingFilter;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
-import org.springframework.security.boot.utils.StringUtils;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -80,23 +80,28 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 		}
 
 		@Bean
-		public FaceIDAuthenticationProcessingFilter faceIDAuthenticationProcessingFilter() throws Exception {
+		public FaceIDAuthenticationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
-			FaceIDAuthenticationProcessingFilter authcFilter = new FaceIDAuthenticationProcessingFilter();
-
-			authcFilter.setAllowSessionCreation(bizProperties.getSessionMgt().isAllowSessionCreation());
-			authcFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
-			authcFilter.setAuthenticationManager(authenticationManager);
-			authcFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
-			authcFilter.setContinueChainBeforeSuccessfulAuthentication(faceIDProperties.getAuthc().isContinueChainBeforeSuccessfulAuthentication());
-			if (StringUtils.hasText(faceIDProperties.getAuthc().getLoginUrlPatterns())) {
-				authcFilter.setFilterProcessesUrl(faceIDProperties.getAuthc().getLoginUrlPatterns());
-			}
-			authcFilter.setPostOnly(faceIDProperties.getAuthc().isPostOnly());
-			authcFilter.setRememberMeServices(rememberMeServices);
-			authcFilter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
+			FaceIDAuthenticationProcessingFilter authenticationFilter = new FaceIDAuthenticationProcessingFilter();
 			
-	        return authcFilter;
+			/**
+			 * 批量设置参数
+			 */
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			
+			map.from(bizProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
+			
+			map.from(authenticationManager).to(authenticationFilter::setAuthenticationManager);
+			map.from(authenticationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
+			map.from(authenticationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
+			
+			map.from(faceIDProperties.getAuthc().getLoginUrlPatterns()).to(authenticationFilter::setFilterProcessesUrl);
+			map.from(faceIDProperties.getAuthc().isPostOnly()).to(authenticationFilter::setPostOnly);
+			map.from(rememberMeServices).to(authenticationFilter::setRememberMeServices);
+			map.from(sessionAuthenticationStrategy).to(authenticationFilter::setSessionAuthenticationStrategy);
+			map.from(faceIDProperties.getAuthc().isContinueChainBeforeSuccessfulAuthentication()).to(authenticationFilter::setContinueChainBeforeSuccessfulAuthentication);
+			
+	        return authenticationFilter;
 	    }
 		
 	    @Override
@@ -107,7 +112,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			
-			http.addFilterBefore(faceIDAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+			http.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
 		}
 
