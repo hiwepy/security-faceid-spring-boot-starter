@@ -79,7 +79,6 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 		}
 
-		@Bean
 		public FaceIDAuthenticationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
 			FaceIDAuthenticationProcessingFilter authenticationFilter = new FaceIDAuthenticationProcessingFilter();
