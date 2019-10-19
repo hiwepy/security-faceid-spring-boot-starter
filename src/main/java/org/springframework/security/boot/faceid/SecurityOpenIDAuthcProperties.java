@@ -28,10 +28,20 @@ import org.springframework.security.boot.biz.authentication.PostRequestAuthentic
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class SecurityOpenIDAuthcProperties {
 
 	public static final String PREFIX = "spring.security.jwt.authc";
 	public static final String DEFAULT_CLAIMED_IDENTITY_FIELD = "openid_identifier";
+
+	/** Authorization Path Pattern */
+	private String pathPattern = "/**";
 	
 	/** 登录地址：会话不存在时访问的地址 */
 	private String loginUrl = "/authz/login";;
@@ -101,128 +111,5 @@ public class SecurityOpenIDAuthcProperties {
 	/** Maximum number of retry to login . */
 	private int retryTimesWhenAccessDenied = 3;
 	private boolean useForward = false;
-	
-	public boolean isAllowSessionCreation() {
-		return allowSessionCreation;
-	}
-	public void setAllowSessionCreation(boolean allowSessionCreation) {
-		this.allowSessionCreation = allowSessionCreation;
-	}
-	public String getFilterProcessesUrl() {
-		return filterProcessesUrl;
-	}
-	public void setFilterProcessesUrl(String filterProcessesUrl) {
-		this.filterProcessesUrl = filterProcessesUrl;
-	}
-	public String getClaimedIdentityFieldName() {
-		return claimedIdentityFieldName;
-	}
-	public void setClaimedIdentityFieldName(String claimedIdentityFieldName) {
-		this.claimedIdentityFieldName = claimedIdentityFieldName;
-	}
-	public Map<String, String> getRealmMapping() {
-		return realmMapping;
-	}
-	public void setRealmMapping(Map<String, String> realmMapping) {
-		this.realmMapping = realmMapping;
-	}
-	public Set<String> getReturnToUrlParameters() {
-		return returnToUrlParameters;
-	}
-	public void setReturnToUrlParameters(Set<String> returnToUrlParameters) {
-		this.returnToUrlParameters = returnToUrlParameters;
-	}
-	public String getLoginUrl() {
-		return loginUrl;
-	}
-	public void setLoginUrl(String loginUrl) {
-		this.loginUrl = loginUrl; 
-	}
-	public String getLoginUrlPatterns() {
-		return loginUrlPatterns;
-	}
-	public void setLoginUrlPatterns(String loginUrlPatterns) {
-		this.loginUrlPatterns = loginUrlPatterns;
-	}
-	public String getRedirectUrl() {
-		return redirectUrl;
-	}
-	public void setRedirectUrl(String redirectUrl) {
-		this.redirectUrl = redirectUrl;
-	}
-	public String getSuccessUrl() {
-		return successUrl;
-	}
-	public void setSuccessUrl(String successUrl) {
-		this.successUrl = successUrl;
-	}
-	public String getUnauthorizedUrl() {
-		return unauthorizedUrl;
-	}
-	public void setUnauthorizedUrl(String unauthorizedUrl) {
-		this.unauthorizedUrl = unauthorizedUrl;
-	}
-	public String getFailureUrl() {
-		return failureUrl;
-	}
-	public void setFailureUrl(String failureUrl) {
-		this.failureUrl = failureUrl;
-	}
-	public String getIdentifierPattern() {
-		return identifierPattern;
-	}
-	public void setIdentifierPattern(String identifierPattern) {
-		this.identifierPattern = identifierPattern;
-	}
-	public String getUsernameParameter() {
-		return usernameParameter;
-	}
-	public void setUsernameParameter(String usernameParameter) {
-		this.usernameParameter = usernameParameter;
-	}
-	public String getPasswordParameter() {
-		return passwordParameter;
-	}
-	public void setPasswordParameter(String passwordParameter) {
-		this.passwordParameter = passwordParameter;
-	}
-	public boolean isContinueChainBeforeSuccessfulAuthentication() {
-		return continueChainBeforeSuccessfulAuthentication;
-	}
-	public void setContinueChainBeforeSuccessfulAuthentication(boolean continueChainBeforeSuccessfulAuthentication) {
-		this.continueChainBeforeSuccessfulAuthentication = continueChainBeforeSuccessfulAuthentication;
-	}
-	public boolean isPostOnly() {
-		return postOnly;
-	}
-	public void setPostOnly(boolean postOnly) {
-		this.postOnly = postOnly;
-	}
-	public String getRetryTimesKeyParameter() {
-		return retryTimesKeyParameter;
-	}
-	public void setRetryTimesKeyParameter(String retryTimesKeyParameter) {
-		this.retryTimesKeyParameter = retryTimesKeyParameter;
-	}
-	public String getRetryTimesKeyAttribute() {
-		return retryTimesKeyAttribute;
-	}
-	public void setRetryTimesKeyAttribute(String retryTimesKeyAttribute) {
-		this.retryTimesKeyAttribute = retryTimesKeyAttribute;
-	}
-	public int getRetryTimesWhenAccessDenied() {
-		return retryTimesWhenAccessDenied;
-	}
-	public void setRetryTimesWhenAccessDenied(int retryTimesWhenAccessDenied) {
-		this.retryTimesWhenAccessDenied = retryTimesWhenAccessDenied;
-	}
-	public boolean isUseForward() {
-		return useForward;
-	}
-	public void setUseForward(boolean useForward) {
-		this.useForward = useForward;
-	}
-	
-	
 
 }

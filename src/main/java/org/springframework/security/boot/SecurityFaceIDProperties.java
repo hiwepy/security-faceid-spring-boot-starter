@@ -8,7 +8,14 @@ import org.springframework.security.boot.biz.property.SecurityRedirectProperties
 import org.springframework.security.boot.biz.property.SecuritySessionMgtProperties;
 import org.springframework.security.boot.faceid.SecurityOpenIDAuthcProperties;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 @ConfigurationProperties(prefix = SecurityFaceIDProperties.PREFIX)
+@Getter
+@Setter
+@ToString
 public class SecurityFaceIDProperties {
 
 	public static final String PREFIX = "spring.security.faceid";
@@ -25,53 +32,5 @@ public class SecurityFaceIDProperties {
 	private SecurityRedirectProperties redirect = new SecurityRedirectProperties();
 	@NestedConfigurationProperty
 	private SecuritySessionMgtProperties sessionMgt = new SecuritySessionMgtProperties();
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public SecurityOpenIDAuthcProperties getAuthc() {
-		return authc;
-	}
-
-	public void setAuthc(SecurityOpenIDAuthcProperties authc) {
-		this.authc = authc;
-	}
-
-	public SecurityCaptchaProperties getCaptcha() {
-		return captcha;
-	}
-
-	public void setCaptcha(SecurityCaptchaProperties captcha) {
-		this.captcha = captcha;
-	}
-
-	public SecurityLogoutProperties getLogout() {
-		return logout;
-	}
-
-	public void setLogout(SecurityLogoutProperties logout) {
-		this.logout = logout;
-	}
-
-	public SecurityRedirectProperties getRedirect() {
-		return redirect;
-	}
-
-	public void setRedirect(SecurityRedirectProperties redirect) {
-		this.redirect = redirect;
-	}
-
-	public SecuritySessionMgtProperties getSessionMgt() {
-		return sessionMgt;
-	}
-
-	public void setSessionMgt(SecuritySessionMgtProperties sessionMgt) {
-		this.sessionMgt = sessionMgt;
-	}
 
 }

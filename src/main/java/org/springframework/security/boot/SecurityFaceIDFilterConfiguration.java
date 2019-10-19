@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -104,14 +103,15 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	    }
 		
 	    @Override
-	    protected void configure(AuthenticationManagerBuilder auth) {
+		public void configure(AuthenticationManagerBuilder auth) {
 	        auth.authenticationProvider(faceIDAuthenticationProvider);
 	    }
 		
 		@Override
-		protected void configure(HttpSecurity http) throws Exception {
+		public void configure(HttpSecurity http) throws Exception {
 			
-			http.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+			http.antMatcher(faceIDProperties.getAuthc().getPathPattern())
+				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
 		}
 
