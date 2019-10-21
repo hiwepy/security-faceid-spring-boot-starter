@@ -25,6 +25,7 @@ import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticat
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -132,6 +133,10 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 			
 			super.configure(http);
 		}
+		
+		@Override
+	    public void configure(WebSecurity web) throws Exception {
+	    }
 
 	}
 	
