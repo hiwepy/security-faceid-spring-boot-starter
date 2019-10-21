@@ -20,7 +20,6 @@ import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticat
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -41,7 +40,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	
 	@Configuration
 	@EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityBizProperties.class })
-	static class FaceIDWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	static class FaceIDWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
 	    private final SecurityFaceIDProperties faceIDProperties;
@@ -65,6 +64,8 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
    				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
+			
+			super(bizProperties);
 			
 			this.bizProperties = bizProperties;
 			this.faceIDProperties = faceIDProperties;
@@ -103,8 +104,9 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	    }
 		
 	    @Override
-		public void configure(AuthenticationManagerBuilder auth) {
+		public void configure(AuthenticationManagerBuilder auth) throws Exception {
 	        auth.authenticationProvider(faceIDAuthenticationProvider);
+	        super.configure(auth);
 	    }
 		
 		@Override
@@ -113,6 +115,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 			http.antMatcher(faceIDProperties.getAuthc().getPathPattern())
 				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
+			super.configure(http);
 		}
 
 	}
