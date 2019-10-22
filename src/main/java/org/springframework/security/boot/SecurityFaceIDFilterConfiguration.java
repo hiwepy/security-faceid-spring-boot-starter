@@ -70,13 +70,12 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 				SecurityBizProperties bizProperties,
 				SecurityFaceIDProperties faceIDProperties,
 				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
-   				ObjectProvider<CorsConfigurationSource> configurationSourceProvider,
 				ObjectProvider<FaceIDAuthenticationProvider> faceIDAuthenticationProvider,
 				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
    				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
-			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable(), configurationSourceProvider.getIfAvailable());
+			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable());
    			
 			this.bizProperties = bizProperties;
 			this.authcProperties = faceIDProperties;
