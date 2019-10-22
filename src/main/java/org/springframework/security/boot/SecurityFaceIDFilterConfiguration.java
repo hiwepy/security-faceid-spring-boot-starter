@@ -1,6 +1,6 @@
 package org.springframework.security.boot;
 
-import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,19 +18,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
+import org.springframework.security.boot.faceid.SecurityOpenIDAuthcProperties;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProcessingFilter;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @AutoConfigureBefore(name = { 
@@ -38,7 +36,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 })
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix = SecurityFaceIDProperties.PREFIX, value = "enabled", havingValue = "true")
-@EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityBizProperties.class, ServerProperties.class })
+@EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityOpenIDAuthcProperties.class, SecurityBizProperties.class, ServerProperties.class })
 public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublisherAware, EnvironmentAware {
 
 
@@ -51,13 +49,10 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	@Order(SecurityProperties.DEFAULT_FILTER_ORDER + 3)
 	static class FaceIDWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
 
-		private final SecurityBizProperties bizProperties;
-	    private final SecurityFaceIDProperties authcProperties;
+	    private final SecurityOpenIDAuthcProperties authcProperties;
 	    
-	    private final AuthenticationManager authenticationManager;
 	    private final RememberMeServices rememberMeServices;
 	    
-	    private final FaceIDAuthenticationProvider authenticationProvider;
 	    private final PostRequestAuthenticationSuccessHandler authenticationSuccessHandler;
 	    private final PostRequestAuthenticationFailureHandler authenticationFailureHandler;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
@@ -68,35 +63,26 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
    				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
    				
 				SecurityBizProperties bizProperties,
-				SecurityFaceIDProperties faceIDProperties,
+				SecurityOpenIDAuthcProperties authcProperties,
+				
 				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
-				ObjectProvider<FaceIDAuthenticationProvider> faceIDAuthenticationProvider,
+				ObjectProvider<FaceIDAuthenticationProvider> authenticationProvider,
 				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
    				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
-			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable());
+			super(bizProperties, authcProperties, authenticationProvider.stream().collect(Collectors.toList()),
+					authenticationManagerProvider.getIfAvailable());
    			
-			this.bizProperties = bizProperties;
-			this.authcProperties = faceIDProperties;
+			this.authcProperties = authcProperties;
 			
-			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
 			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
 			
-			this.authenticationProvider = faceIDAuthenticationProvider.getIfAvailable();
 			this.authenticationSuccessHandler = authenticationSuccessHandler.getIfAvailable();
    			this.authenticationFailureHandler = authenticationFailureHandler.getIfAvailable();
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 		}
 
-		@Override
-		public AuthenticationManager authenticationManagerBean() throws Exception {
-   			AuthenticationManager parentManager = authenticationManager == null ? super.authenticationManagerBean() : authenticationManager;
-			ProviderManager authenticationManager = new ProviderManager( Arrays.asList(authenticationProvider), parentManager);
-			// 不擦除认证密码，擦除会导致TokenBasedRememberMeServices因为找不到Credentials再调用UserDetailsService而抛出UsernameNotFoundException
-			authenticationManager.setEraseCredentialsAfterAuthentication(false);
-			return authenticationManager;
-		}
 		
 		public FaceIDAuthenticationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
@@ -107,31 +93,25 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 			 */
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			
-			map.from(bizProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
+			map.from(authcProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
 			
 			map.from(authenticationManagerBean()).to(authenticationFilter::setAuthenticationManager);
 			map.from(authenticationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
 			map.from(authenticationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
 			
-			map.from(authcProperties.getAuthc().getLoginUrlPatterns()).to(authenticationFilter::setFilterProcessesUrl);
-			map.from(authcProperties.getAuthc().isPostOnly()).to(authenticationFilter::setPostOnly);
+			map.from(authcProperties.getLoginUrlPatterns()).to(authenticationFilter::setFilterProcessesUrl);
+			map.from(authcProperties.isPostOnly()).to(authenticationFilter::setPostOnly);
 			map.from(rememberMeServices).to(authenticationFilter::setRememberMeServices);
 			map.from(sessionAuthenticationStrategy).to(authenticationFilter::setSessionAuthenticationStrategy);
-			map.from(authcProperties.getAuthc().isContinueChainBeforeSuccessfulAuthentication()).to(authenticationFilter::setContinueChainBeforeSuccessfulAuthentication);
+			map.from(authcProperties.isContinueChainBeforeSuccessfulAuthentication()).to(authenticationFilter::setContinueChainBeforeSuccessfulAuthentication);
 			
 	        return authenticationFilter;
-	    }
-		
-	    @Override
-		public void configure(AuthenticationManagerBuilder auth) throws Exception {
-	        auth.authenticationProvider(authenticationProvider);
-	        super.configure(auth);
 	    }
 		
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			
-			http.antMatcher(authcProperties.getAuthc().getPathPattern())
+			http.antMatcher(authcProperties.getPathPattern())
 				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
 			super.configure(http);

@@ -23,8 +23,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.boot.biz.authentication.AuthenticatingFailureCounter;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationProcessingFilter;
+import org.springframework.security.boot.biz.property.SecurityAuthcProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -32,10 +34,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+@ConfigurationProperties(SecurityOpenIDAuthcProperties.PREFIX)
 @Getter
 @Setter
 @ToString
-public class SecurityOpenIDAuthcProperties {
+public class SecurityOpenIDAuthcProperties extends SecurityAuthcProperties {
 
 	public static final String PREFIX = "spring.security.jwt.authc";
 	public static final String DEFAULT_CLAIMED_IDENTITY_FIELD = "openid_identifier";
