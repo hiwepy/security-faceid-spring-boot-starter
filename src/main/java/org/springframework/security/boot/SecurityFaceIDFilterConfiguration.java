@@ -29,6 +29,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @AutoConfigureBefore(name = { 
@@ -50,7 +52,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	static class FaceIDWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
 
 		private final SecurityBizProperties bizProperties;
-	    private final SecurityFaceIDProperties faceIDProperties;
+	    private final SecurityFaceIDProperties authcProperties;
 	    
 	    private final AuthenticationManager authenticationManager;
 	    private final RememberMeServices rememberMeServices;
@@ -67,15 +69,17 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
    				
 				SecurityBizProperties bizProperties,
 				SecurityFaceIDProperties faceIDProperties,
+				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
+   				ObjectProvider<CorsConfigurationSource> configurationSourceProvider,
 				ObjectProvider<FaceIDAuthenticationProvider> faceIDAuthenticationProvider,
 				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
    				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
-			super(bizProperties);
-			
+			super(bizProperties, csrfTokenRepositoryProvider.getIfAvailable(), configurationSourceProvider.getIfAvailable());
+   			
 			this.bizProperties = bizProperties;
-			this.faceIDProperties = faceIDProperties;
+			this.authcProperties = faceIDProperties;
 			
 			this.authenticationManager = authenticationManagerProvider.getIfAvailable();
 			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
@@ -110,11 +114,11 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 			map.from(authenticationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
 			map.from(authenticationFailureHandler).to(authenticationFilter::setAuthenticationFailureHandler);
 			
-			map.from(faceIDProperties.getAuthc().getLoginUrlPatterns()).to(authenticationFilter::setFilterProcessesUrl);
-			map.from(faceIDProperties.getAuthc().isPostOnly()).to(authenticationFilter::setPostOnly);
+			map.from(authcProperties.getAuthc().getLoginUrlPatterns()).to(authenticationFilter::setFilterProcessesUrl);
+			map.from(authcProperties.getAuthc().isPostOnly()).to(authenticationFilter::setPostOnly);
 			map.from(rememberMeServices).to(authenticationFilter::setRememberMeServices);
 			map.from(sessionAuthenticationStrategy).to(authenticationFilter::setSessionAuthenticationStrategy);
-			map.from(faceIDProperties.getAuthc().isContinueChainBeforeSuccessfulAuthentication()).to(authenticationFilter::setContinueChainBeforeSuccessfulAuthentication);
+			map.from(authcProperties.getAuthc().isContinueChainBeforeSuccessfulAuthentication()).to(authenticationFilter::setContinueChainBeforeSuccessfulAuthentication);
 			
 	        return authenticationFilter;
 	    }
@@ -128,7 +132,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			
-			http.antMatcher(faceIDProperties.getAuthc().getPathPattern())
+			http.antMatcher(authcProperties.getAuthc().getPathPattern())
 				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
 			super.configure(http);
