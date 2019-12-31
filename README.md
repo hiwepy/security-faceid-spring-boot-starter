@@ -1,4 +1,4 @@
-# spring-boot-starter-security-biz
+# security-faceid-spring-boot-starter
 security starter for spring boot
 
 ### 说明
@@ -14,12 +14,7 @@ security starter for spring boot
 ``` xml
 <dependency>
 	<groupId>${project.groupId}</groupId>
-	<artifactId>spring-boot-starter-security-biz</artifactId>
+	<artifactId>security-faceid-spring-boot-starter</artifactId>
 	<version>${project.version}</version>
 </dependency>
 ```
-
-### Sample
-
-[https://github.com/vindell/spring-boot-starter-samples/tree/master/spring-boot-sample-security-biz](https://github.com/vindell/spring-boot-starter-samples/tree/master/spring-boot-sample-security-biz "spring-boot-sample-security-biz")
-
