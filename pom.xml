@@ -378,10 +378,10 @@
 	
 	<dependencyManagement>
 		<dependencies>
-			<!-- https://github.com/hiwepy/spring-boot-starter-security-biz -->
+			<!-- https://github.com/hiwepy/security-biz-spring-boot-starter -->
 			<dependency>
 				<groupId>com.github.hiwepy</groupId>
-				<artifactId>spring-boot-starter-security-biz</artifactId>
+				<artifactId>security-biz-spring-boot-starter</artifactId>
 				<version>${spring-security-biz.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.github.hiwepy/spring-boot-starter-arcface -->
@@ -469,10 +469,10 @@
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 	 
-		<!-- https://github.com/hiwepy/spring-boot-starter-security-biz -->
+		<!-- https://github.com/hiwepy/security-biz-spring-boot-starter -->
 		<dependency>
 			<groupId>com.github.hiwepy</groupId>
-			<artifactId>spring-boot-starter-security-biz</artifactId>
+			<artifactId>security-biz-spring-boot-starter</artifactId>
 		</dependency>
 		
 	</dependencies>
