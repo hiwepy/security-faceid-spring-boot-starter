@@ -47,7 +47,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	@Configuration
 	@EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityBizProperties.class })
 	@Order(SecurityProperties.DEFAULT_FILTER_ORDER + 3)
-	static class FaceIDWebSecurityConfigurerAdapter extends SecurityBizConfigurerAdapter {
+	static class FaceIDWebSecurityConfigurerAdapter extends AbstractSecurityConfigurerAdapter {
 
 	    private final SecurityOpenIDAuthcProperties authcProperties;
 	    
