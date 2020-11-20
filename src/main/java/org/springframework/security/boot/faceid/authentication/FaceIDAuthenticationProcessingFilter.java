@@ -24,21 +24,14 @@ import javax.servlet.http.Part;
 
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.boot.biz.SpringSecurityBizMessageSource;
-import org.springframework.security.boot.biz.exception.AuthResponseCode;
-import org.springframework.security.boot.biz.exception.AuthenticationMethodNotSupportedException;
+import org.springframework.security.boot.biz.authentication.PostOnlyAuthenticationProcessingFilter;
 import org.springframework.security.boot.faceid.exception.AuthenticationFaceNotFoundException;
-import org.springframework.security.boot.utils.WebUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-public class FaceIDAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+public class FaceIDAuthenticationProcessingFilter extends PostOnlyAuthenticationProcessingFilter {
 
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
 	public static final String SPRING_SECURITY_FORM_FACE_KEY = "face";
@@ -49,20 +42,11 @@ public class FaceIDAuthenticationProcessingFilter extends AbstractAuthentication
     public FaceIDAuthenticationProcessingFilter() {
     	super(new AntPathRequestMatcher("/faceid", "POST"));
     }
-
+    
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+    public Authentication doAttemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-
-        if (isPostOnly() && !WebUtils.isPostRequest(request) ) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Authentication method not supported. Request method: " + request.getMethod());
-			}
-			throw new AuthenticationMethodNotSupportedException(messages.getMessage(AuthResponseCode.SC_AUTHC_METHOD_NOT_ALLOWED.getMsgKey(), new Object[] { request.getMethod() }, 
-					"Authentication method not supported. Request method:" + request.getMethod()));
-		}
-        
-
+ 
 		Part face = request.getPart(getFaceParameter());
 		
 	 	// 没有提供人脸数据
