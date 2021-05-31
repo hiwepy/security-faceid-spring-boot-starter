@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
+import org.springframework.security.boot.biz.property.SecuritySessionMgtProperties;
 import org.springframework.security.boot.faceid.SecurityOpenIDAuthcProperties;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProcessingFilter;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
@@ -58,12 +59,13 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
 	
 		public FaceIDWebSecurityConfigurerAdapter(
+
+				SecurityBizProperties bizProperties,
+				SecuritySessionMgtProperties sessionMgtProperties,
+				SecurityOpenIDAuthcProperties authcProperties,
 				
 				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
    				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
-   				
-				SecurityBizProperties bizProperties,
-				SecurityOpenIDAuthcProperties authcProperties,
 				
 				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
 				ObjectProvider<FaceIDAuthenticationProvider> authenticationProvider,
@@ -71,7 +73,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
    				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
-			super(bizProperties, authcProperties, authenticationProvider.stream().collect(Collectors.toList()),
+			super(bizProperties, authcProperties, sessionMgtProperties, authenticationProvider.stream().collect(Collectors.toList()),
 					authenticationManagerProvider.getIfAvailable());
    			
 			this.authcProperties = authcProperties;
