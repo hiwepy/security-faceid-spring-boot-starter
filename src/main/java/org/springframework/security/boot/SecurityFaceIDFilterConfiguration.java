@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.biz.web.servlet.i18n.LocaleContextFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -11,25 +12,24 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
 import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
+import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationEntryPoint;
 import org.springframework.security.boot.biz.property.SecuritySessionMgtProperties;
 import org.springframework.security.boot.faceid.SecurityOpenIDAuthcProperties;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProcessingFilter;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.savedrequest.RequestCache;
 
 @Configuration
 @AutoConfigureBefore(name = { 
@@ -38,12 +38,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix = SecurityFaceIDProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityOpenIDAuthcProperties.class, SecurityBizProperties.class, ServerProperties.class })
-public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublisherAware, EnvironmentAware {
-
-
-	private ApplicationEventPublisher eventPublisher;
-	private Environment environment;
- 
+public class SecurityFaceIDFilterConfiguration {
 	
 	@Configuration
 	@EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityBizProperties.class })
@@ -51,9 +46,12 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	static class FaceIDWebSecurityConfigurerAdapter extends WebSecurityBizConfigurerAdapter {
 
 	    private final SecurityOpenIDAuthcProperties authcProperties;
-	    
-	    private final RememberMeServices rememberMeServices;
-	    
+
+    	private final LocaleContextFilter localeContextFilter;
+    	private final RequestCache requestCache;
+    	private final RememberMeServices rememberMeServices;
+
+	    private final AuthenticationEntryPoint authenticationEntryPoint;
 	    private final PostRequestAuthenticationSuccessHandler authenticationSuccessHandler;
 	    private final PostRequestAuthenticationFailureHandler authenticationFailureHandler;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
@@ -63,7 +61,9 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 				SecurityBizProperties bizProperties,
 				SecuritySessionMgtProperties sessionMgtProperties,
 				SecurityOpenIDAuthcProperties authcProperties,
-				
+
+   				ObjectProvider<LocaleContextFilter> localeContextProvider,
+   				ObjectProvider<MatchedAuthenticationEntryPoint> authenticationEntryPointProvider,
 				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
    				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
 				
@@ -78,11 +78,15 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
    			
 			this.authcProperties = authcProperties;
 			
-			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
-			
-			this.authenticationSuccessHandler = authenticationSuccessHandler.getIfAvailable();
+			this.localeContextFilter = localeContextProvider.getIfAvailable();
+			this.authenticationEntryPoint = super.authenticationEntryPoint(authenticationEntryPointProvider.stream().collect(Collectors.toList()));
+   			this.authenticationSuccessHandler = authenticationSuccessHandler.getIfAvailable();
    			this.authenticationFailureHandler = authenticationFailureHandler.getIfAvailable();
 			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
+			
+   			this.requestCache = super.requestCache();
+			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
+			
 		}
 
 		
@@ -95,7 +99,7 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 			 */
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			
-			map.from(authcProperties.getSessionMgt().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
+			map.from(getSessionMgtProperties().isAllowSessionCreation()).to(authenticationFilter::setAllowSessionCreation);
 			
 			map.from(authenticationManagerBean()).to(authenticationFilter::setAuthenticationManager);
 			map.from(authenticationSuccessHandler).to(authenticationFilter::setAuthenticationSuccessHandler);
@@ -113,7 +117,17 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			
-			http.antMatcher(authcProperties.getPathPattern())
+			http.requestCache()
+	        	.requestCache(requestCache)
+	        	.and()
+	   	    	.exceptionHandling()
+	        	.authenticationEntryPoint(authenticationEntryPoint)
+	        	.and()
+	        	.httpBasic()
+	        	.authenticationEntryPoint(authenticationEntryPoint)
+	        	.and()
+				.antMatcher(authcProperties.getPathPattern())
+	        	.addFilterBefore(localeContextFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
 			super.configure(http);
@@ -124,16 +138,6 @@ public class SecurityFaceIDFilterConfiguration implements ApplicationEventPublis
 	    	super.configure(web);
 	    }
 		
-	}
-	
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-		this.eventPublisher = applicationEventPublisher;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
 	}
 	
 }
