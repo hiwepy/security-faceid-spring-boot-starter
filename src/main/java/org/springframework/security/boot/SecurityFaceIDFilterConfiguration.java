@@ -1,9 +1,9 @@
 package org.springframework.security.boot;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.biz.web.servlet.i18n.LocaleContextFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,21 +15,23 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationFailureHandler;
-import org.springframework.security.boot.biz.authentication.PostRequestAuthenticationSuccessHandler;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.boot.biz.authentication.AuthenticationListener;
 import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationEntryPoint;
+import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationFailureHandler;
+import org.springframework.security.boot.biz.authentication.nested.MatchedAuthenticationSuccessHandler;
 import org.springframework.security.boot.biz.property.SecuritySessionMgtProperties;
 import org.springframework.security.boot.faceid.SecurityOpenIDAuthcProperties;
 import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProcessingFilter;
-import org.springframework.security.boot.faceid.authentication.FaceIDAuthenticationProvider;
+import org.springframework.security.boot.utils.WebSecurityUtils;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.savedrequest.RequestCache;
 
 @Configuration
 @AutoConfigureBefore(name = { 
@@ -47,13 +49,11 @@ public class SecurityFaceIDFilterConfiguration {
 
 	    private final SecurityOpenIDAuthcProperties authcProperties;
 
-    	private final LocaleContextFilter localeContextFilter;
-    	private final RequestCache requestCache;
-    	private final RememberMeServices rememberMeServices;
-
+	    private final LocaleContextFilter localeContextFilter;
 	    private final AuthenticationEntryPoint authenticationEntryPoint;
-	    private final PostRequestAuthenticationSuccessHandler authenticationSuccessHandler;
-	    private final PostRequestAuthenticationFailureHandler authenticationFailureHandler;
+	    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+	    private final AuthenticationFailureHandler authenticationFailureHandler;
+    	private final RememberMeServices rememberMeServices;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
 	
 		public FaceIDWebSecurityConfigurerAdapter(
@@ -63,29 +63,26 @@ public class SecurityFaceIDFilterConfiguration {
 				SecurityOpenIDAuthcProperties authcProperties,
 
    				ObjectProvider<LocaleContextFilter> localeContextProvider,
+				ObjectProvider<AuthenticationProvider> authenticationProvider,
+   				ObjectProvider<AuthenticationListener> authenticationListenerProvider,
    				ObjectProvider<MatchedAuthenticationEntryPoint> authenticationEntryPointProvider,
-				ObjectProvider<AuthenticationManager> authenticationManagerProvider,
+   				ObjectProvider<MatchedAuthenticationSuccessHandler> authenticationSuccessHandlerProvider,
+   				ObjectProvider<MatchedAuthenticationFailureHandler> authenticationFailureHandlerProvider,
    				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
 				
-				ObjectProvider<CsrfTokenRepository> csrfTokenRepositoryProvider,
-				ObjectProvider<FaceIDAuthenticationProvider> authenticationProvider,
-				@Qualifier("jwtAuthenticationSuccessHandler") ObjectProvider<PostRequestAuthenticationSuccessHandler> authenticationSuccessHandler,
-   				ObjectProvider<PostRequestAuthenticationFailureHandler> authenticationFailureHandler,
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
-			super(bizProperties, authcProperties, sessionMgtProperties, authenticationProvider.stream().collect(Collectors.toList()),
-					authenticationManagerProvider.getIfAvailable());
+			super(bizProperties, sessionMgtProperties, authenticationProvider.stream().collect(Collectors.toList()));
    			
 			this.authcProperties = authcProperties;
 			
 			this.localeContextFilter = localeContextProvider.getIfAvailable();
-			this.authenticationEntryPoint = super.authenticationEntryPoint(authenticationEntryPointProvider.stream().collect(Collectors.toList()));
-   			this.authenticationSuccessHandler = authenticationSuccessHandler.getIfAvailable();
-   			this.authenticationFailureHandler = authenticationFailureHandler.getIfAvailable();
-			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
-			
-   			this.requestCache = super.requestCache();
-			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
+			List<AuthenticationListener> authenticationListeners = authenticationListenerProvider.stream().collect(Collectors.toList());
+			this.authenticationEntryPoint = WebSecurityUtils.authenticationEntryPoint(authcProperties, sessionMgtProperties, authenticationEntryPointProvider.stream().collect(Collectors.toList()));
+   			this.authenticationSuccessHandler = WebSecurityUtils.authenticationSuccessHandler(authcProperties, sessionMgtProperties, authenticationListeners, authenticationSuccessHandlerProvider.stream().collect(Collectors.toList()));
+   			this.authenticationFailureHandler = WebSecurityUtils.authenticationFailureHandler(authcProperties, sessionMgtProperties, authenticationListeners, authenticationFailureHandlerProvider.stream().collect(Collectors.toList()));
+   			this.rememberMeServices = rememberMeServicesProvider.getIfAvailable();
+   			this.sessionAuthenticationStrategy = sessionAuthenticationStrategyProvider.getIfAvailable();
 			
 		}
 
@@ -117,20 +114,20 @@ public class SecurityFaceIDFilterConfiguration {
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			
-			http.requestCache()
-	        	.requestCache(requestCache)
-	        	.and()
-	   	    	.exceptionHandling()
+			http.antMatcher(authcProperties.getPathPattern())
+				.exceptionHandling()
 	        	.authenticationEntryPoint(authenticationEntryPoint)
 	        	.and()
 	        	.httpBasic()
-	        	.authenticationEntryPoint(authenticationEntryPoint)
-	        	.and()
-				.antMatcher(authcProperties.getPathPattern())
+	        	.disable()
 	        	.addFilterBefore(localeContextFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 			
-			super.configure(http);
+			super.configure(http, authcProperties.getCors());
+   	    	super.configure(http, authcProperties.getCsrf());
+   	    	super.configure(http, authcProperties.getHeaders());
+	    	super.configure(http);
+	    	
 		}
 		
 		@Override
