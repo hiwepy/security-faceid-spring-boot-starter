@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>4.1.0-M4</version>
 		<relativePath /> 
 	</parent>
 	
 	<artifactId>security-faceid-spring-boot-starter</artifactId>
 	<description>Spring Boot Starter For Spring Security With ukey + FaceID </description>
-	<version>2.7.x.20260527-SNAPSHOT</version>
+	<version>4.1.x.20260527-SNAPSHOT</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<url>https://github.com/easy-4-java/${project.artifactId}</url>
 	<packaging>jar</packaging>
@@ -401,9 +401,8 @@
 		
 		
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		
