@@ -23,13 +23,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.boot.biz.SpringSecurityBizMessageSource;
 import org.springframework.security.boot.biz.authentication.PostOnlyAuthenticationProcessingFilter;
 import org.springframework.security.boot.faceid.exception.AuthenticationFaceNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 public class FaceIDAuthenticationProcessingFilter extends PostOnlyAuthenticationProcessingFilter {
 
@@ -40,7 +41,7 @@ public class FaceIDAuthenticationProcessingFilter extends PostOnlyAuthentication
     private boolean postOnly = true;
 	
     public FaceIDAuthenticationProcessingFilter() {
-    	super(new AntPathRequestMatcher("/faceid", "POST"));
+		super(PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/faceid"));
     }
     
     @Override

@@ -28,7 +28,7 @@ public class FaceIDAuthenticationToken extends AbstractAuthenticationToken {
     private Object credentials;
 
     public FaceIDAuthenticationToken(Object principal) {
-        super(null);
+		super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
         setAuthenticated(false);
     }
