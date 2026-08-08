@@ -15,16 +15,24 @@
  */
 package org.springframework.security.boot.faceid.authentication;
 
-import org.springframework.security.boot.faceid.userdetails.FaceInfo;
-import org.springframework.security.core.Authentication;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * TODO
+ * Unit tests for {{ @link FaceIDAuthenticationToken }}.
+ *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
+@DisplayName("FaceIDAuthenticationToken Tests")
+class FaceIDAuthenticationTokenTest {
 
-public interface FaceRecognitionProvider {
-
-	FaceInfo loadFaceInfo(Authentication authentication);
-	
+    @Test
+    @DisplayName("Instance can be created via constructor")
+    void testInstantiation() {
+        FaceIDAuthenticationToken instance = new FaceIDAuthenticationToken(null);
+        assertThat(instance).isNotNull();
+    }
 }
