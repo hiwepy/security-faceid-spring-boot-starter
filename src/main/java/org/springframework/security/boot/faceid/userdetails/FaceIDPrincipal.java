@@ -23,7 +23,7 @@ import org.springframework.security.core.GrantedAuthority;
 /**
  * TODO
  * 
- * @author ： <a href="https://github.com/hiwepy">wandl</a>
+ * @author [@Loong Wan](https://github.com/loong10k)
  */
 @SuppressWarnings("serial")
 public class FaceIDPrincipal extends SecurityPrincipal {

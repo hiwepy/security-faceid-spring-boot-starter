@@ -13,18 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.springframework.security.boot.faceid.authentication;
+package org.springframework.security.boot;
 
-import org.springframework.security.boot.faceid.userdetails.FaceInfo;
-import org.springframework.security.core.Authentication;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * TODO
+ * Unit tests for {{ @link SecurityFaceIDFilterConfiguration }}.
+ *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
+@DisplayName("SecurityFaceIDFilterConfiguration Tests")
+class SecurityFaceIDFilterConfigurationTest {
 
-public interface FaceRecognitionProvider {
-
-	FaceInfo loadFaceInfo(Authentication authentication);
-	
+    @Test
+    @DisplayName("Instance can be created via constructor")
+    void testInstantiation() {
+        SecurityFaceIDFilterConfiguration instance = new SecurityFaceIDFilterConfiguration();
+        assertThat(instance).isNotNull();
+    }
 }
