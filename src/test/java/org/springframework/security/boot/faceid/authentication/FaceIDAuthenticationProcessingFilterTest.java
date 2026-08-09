@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit tests for {{ @link FaceIDAuthenticationProcessingFilter }}.
+ * Unit tests for {@link FaceIDAuthenticationProcessingFilter}.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
@@ -34,5 +34,41 @@ class FaceIDAuthenticationProcessingFilterTest {
     void testInstantiation() {
         FaceIDAuthenticationProcessingFilter instance = new FaceIDAuthenticationProcessingFilter();
         assertThat(instance).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Default face parameter is 'face'")
+    void testDefaultFaceParameter() {
+        FaceIDAuthenticationProcessingFilter filter = new FaceIDAuthenticationProcessingFilter();
+        assertThat(filter.getFaceParameter()).isEqualTo("face");
+    }
+
+    @Test
+    @DisplayName("Face parameter can be changed")
+    void testSetFaceParameter() {
+        FaceIDAuthenticationProcessingFilter filter = new FaceIDAuthenticationProcessingFilter();
+        filter.setFaceParameter("myFace");
+        assertThat(filter.getFaceParameter()).isEqualTo("myFace");
+    }
+
+    @Test
+    @DisplayName("Default postOnly is true")
+    void testDefaultPostOnly() {
+        FaceIDAuthenticationProcessingFilter filter = new FaceIDAuthenticationProcessingFilter();
+        assertThat(filter.isPostOnly()).isTrue();
+    }
+
+    @Test
+    @DisplayName("postOnly can be set to false")
+    void testSetPostOnly() {
+        FaceIDAuthenticationProcessingFilter filter = new FaceIDAuthenticationProcessingFilter();
+        filter.setPostOnly(false);
+        assertThat(filter.isPostOnly()).isFalse();
+    }
+
+    @Test
+    @DisplayName("SPRING_SECURITY_FORM_FACE_KEY constant equals 'face'")
+    void testFormFaceKey() {
+        assertThat(FaceIDAuthenticationProcessingFilter.SPRING_SECURITY_FORM_FACE_KEY).isEqualTo("face");
     }
 }

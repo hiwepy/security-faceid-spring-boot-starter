@@ -18,8 +18,16 @@ package org.springframework.security.boot;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.boot.biz.userdetails.UserDetailsServiceAdapter;
+import org.springframework.security.boot.faceid.authentication.FaceRecognitionProvider;
+import org.springframework.security.boot.faceid.userdetails.FaceInfo;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for {{ @link SecurityFaceIDAutoConfiguration }}.
@@ -45,9 +53,32 @@ class SecurityFaceIDAutoConfigurationTest {
     @Test
     @DisplayName("Auto-configuration loads when 'spring.security.faceid.enabled=true'")
     void testLoadsWhenEnabledPropertySet() {
-        runner.withUserConfiguration(SecurityFaceIDAutoConfiguration.class)
+        runner.withUserConfiguration(TestConfig.class, SecurityFaceIDAutoConfiguration.class)
                 .withPropertyValues("spring.security.faceid.enabled=true")
                 .run(context -> assertThat(context).hasSingleBean(SecurityFaceIDAutoConfiguration.class));
+    }
+
+    /**
+     * Minimal test configuration that supplies the beans required by
+     * {@link SecurityFaceIDAutoConfiguration}.
+     */
+    @org.springframework.context.annotation.Configuration
+    static class TestConfig {
+
+        @Bean
+        public FaceRecognitionProvider faceRecognitionProvider() {
+            return authentication -> null;
+        }
+
+        @Bean
+        public UserDetailsServiceAdapter userDetailsServiceAdapter() {
+            return new UserDetailsServiceAdapter() {
+                @Override
+                public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                    return mock(UserDetails.class);
+                }
+            };
+        }
     }
 
     @Test

@@ -54,19 +54,12 @@ class SecurityOpenIDAuthcPropertiesTest {
     }
 
     @Test
-    @DisplayName("Field 'loginUrl' can be set and read")
+    @DisplayName("Field 'loginUrl' can be set and read via getter/setter")
     void testLoginUrlField() {
         SecurityOpenIDAuthcProperties props = new SecurityOpenIDAuthcProperties();
-        // Use reflection to set private field (covers all fields including those without setters)
-        try {
-            java.lang.reflect.Field f = SecurityOpenIDAuthcProperties.class.getDeclaredField("loginUrl");
-            f.setAccessible(true);
-            f.set(props, "test");
-            Object value = f.get(props);
-            assertThat(value).isNotNull();
-        } catch (Exception e) {
-            // Field may have a more complex type; skip silently
-        }
+        assertThat(props.getLoginUrl()).isEqualTo("/authz/login");
+        props.setLoginUrl("/custom/login");
+        assertThat(props.getLoginUrl()).isEqualTo("/custom/login");
     }
 
     @Test

@@ -15,11 +15,6 @@
  */
 package org.springframework.security.boot.faceid.authentication;
 
-import java.io.IOException;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -31,67 +26,61 @@ import org.springframework.security.core.AuthenticationException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit tests for {@link FaceIDMatchedAuthenticationEntryPoint}.
+ * Unit tests for {@link FaceIDMatchedAuthenticationFailureHandler}.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
-@DisplayName("FaceIDMatchedAuthenticationEntryPoint Tests")
-class FaceIDMatchedAuthenticationEntryPointTest {
+@DisplayName("FaceIDMatchedAuthenticationFailureHandler Tests")
+class FaceIDMatchedAuthenticationFailureHandlerTest {
 
-    private final FaceIDMatchedAuthenticationEntryPoint entryPoint = new FaceIDMatchedAuthenticationEntryPoint();
-
-    @Test
-    @DisplayName("Instance can be created via constructor")
-    void testInstantiation() {
-        assertThat(entryPoint).isNotNull();
-    }
+    private final FaceIDMatchedAuthenticationFailureHandler handler = new FaceIDMatchedAuthenticationFailureHandler();
 
     @Test
     @DisplayName("supports returns true for AuthenticationFaceNotFoundException")
     void testSupportsFaceNotFound() {
-        assertThat(entryPoint.supports(new AuthenticationFaceNotFoundException("no face"))).isTrue();
+        assertThat(handler.supports(new AuthenticationFaceNotFoundException("no face"))).isTrue();
     }
 
     @Test
     @DisplayName("supports returns true for AuthenticationFaceIDNotFoundException")
     void testSupportsFaceIdNotFound() {
-        assertThat(entryPoint.supports(new AuthenticationFaceIDNotFoundException("no id"))).isTrue();
+        assertThat(handler.supports(new AuthenticationFaceIDNotFoundException("no id"))).isTrue();
     }
 
     @Test
     @DisplayName("supports returns false for generic AuthenticationException")
     void testSupportsGenericException() {
-        assertThat(entryPoint.supports(new AuthenticationException("generic") {})).isFalse();
+        assertThat(handler.supports(new AuthenticationException("generic") {})).isFalse();
     }
 
     @Test
-    @DisplayName("commence writes JSON for AuthenticationFaceNotFoundException")
-    void testCommenceFaceNotFound() throws Exception {
+    @DisplayName("onAuthenticationFailure writes JSON for AuthenticationFaceNotFoundException")
+    void testOnFailureFaceNotFound() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        entryPoint.commence(request, response, new AuthenticationFaceNotFoundException("no face"));
+        handler.onAuthenticationFailure(request, response, new AuthenticationFaceNotFoundException("no face"));
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentType()).startsWith("application/json");
         assertThat(response.getContentAsString()).contains("code");
     }
 
     @Test
-    @DisplayName("commence writes JSON for AuthenticationFaceIDNotFoundException")
-    void testCommenceFaceIdNotFound() throws Exception {
+    @DisplayName("onAuthenticationFailure writes JSON for AuthenticationFaceIDNotFoundException")
+    void testOnFailureFaceIdNotFound() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        entryPoint.commence(request, response, new AuthenticationFaceIDNotFoundException("no id"));
+        handler.onAuthenticationFailure(request, response, new AuthenticationFaceIDNotFoundException("no id"));
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("code");
     }
 
     @Test
-    @DisplayName("commence writes JSON for generic exception")
-    void testCommenceGenericException() throws Exception {
+    @DisplayName("onAuthenticationFailure writes JSON for generic exception")
+    void testOnFailureGenericException() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        entryPoint.commence(request, response, new AuthenticationException("generic") {});
+        handler.onAuthenticationFailure(request, response, new AuthenticationException("generic") {});
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getContentAsString()).contains("code");
     }

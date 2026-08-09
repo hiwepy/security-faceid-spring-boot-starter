@@ -52,4 +52,34 @@ public class FaceInfo {
 	 */
 	protected String faceToken;
 
+	public String getFaceId() { return faceId; }
+	public void setFaceId(String faceId) { this.faceId = faceId; }
+	public String getFace() { return face; }
+	public void setFace(String face) { this.face = face; }
+	public String getFaceType() { return faceType; }
+	public void setFaceType(String faceType) { this.faceType = faceType; }
+	public String getFaceToken() { return faceToken; }
+	public void setFaceToken(String faceToken) { this.faceToken = faceToken; }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		FaceInfo faceInfo = (FaceInfo) o;
+		return java.util.Objects.equals(faceId, faceInfo.faceId)
+				&& java.util.Objects.equals(face, faceInfo.face)
+				&& java.util.Objects.equals(faceType, faceInfo.faceType)
+				&& java.util.Objects.equals(faceToken, faceInfo.faceToken);
+	}
+
+	@Override
+	public int hashCode() {
+		return java.util.Objects.hash(faceId, face, faceType, faceToken);
+	}
+
+	@Override
+	public String toString() {
+		return "FaceInfo{faceId='" + faceId + "', face='" + face + "', faceType='" + faceType + "', faceToken='" + faceToken + "'}";
+	}
+
 }

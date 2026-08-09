@@ -15,13 +15,17 @@
  */
 package org.springframework.security.boot.faceid.authentication;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Unit tests for {{ @link FaceIDAuthenticationToken }}.
+ * Unit tests for {@link FaceIDAuthenticationToken}.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
@@ -30,9 +34,50 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FaceIDAuthenticationTokenTest {
 
     @Test
-    @DisplayName("Instance can be created via constructor")
-    void testInstantiation() {
-        FaceIDAuthenticationToken instance = new FaceIDAuthenticationToken(null);
-        assertThat(instance).isNotNull();
+    @DisplayName("Unauthenticated token has null authorities and is not authenticated")
+    void testUnauthenticatedToken() {
+        FaceIDAuthenticationToken token = new FaceIDAuthenticationToken("principal");
+        assertThat(token).isNotNull();
+        assertThat(token.getPrincipal()).isEqualTo("principal");
+        assertThat(token.getCredentials()).isNull();
+        assertThat(token.isAuthenticated()).isFalse();
+        assertThat(token.getAuthorities()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Authenticated token carries principal, credentials and authorities")
+    void testAuthenticatedToken() {
+        FaceIDAuthenticationToken token = new FaceIDAuthenticationToken(
+                "user", "pass", Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        assertThat(token.getPrincipal()).isEqualTo("user");
+        assertThat(token.getCredentials()).isEqualTo("pass");
+        assertThat(token.isAuthenticated()).isTrue();
+        assertThat(token.getAuthorities()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("setAuthenticated(true) throws IllegalArgumentException")
+    void testSetAuthenticatedTrueThrows() {
+        FaceIDAuthenticationToken token = new FaceIDAuthenticationToken("p");
+        assertThatThrownBy(() -> token.setAuthenticated(true))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("setAuthenticated(false) is accepted")
+    void testSetAuthenticatedFalse() {
+        FaceIDAuthenticationToken token = new FaceIDAuthenticationToken("p");
+        token.setAuthenticated(false);
+        assertThat(token.isAuthenticated()).isFalse();
+    }
+
+    @Test
+    @DisplayName("eraseCredentials nulls the credentials field")
+    void testEraseCredentials() {
+        FaceIDAuthenticationToken token = new FaceIDAuthenticationToken(
+                "user", "secret", Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        assertThat(token.getCredentials()).isEqualTo("secret");
+        token.eraseCredentials();
+        assertThat(token.getCredentials()).isNull();
     }
 }

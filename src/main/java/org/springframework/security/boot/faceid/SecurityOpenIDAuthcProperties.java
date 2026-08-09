@@ -55,8 +55,8 @@ public class SecurityOpenIDAuthcProperties extends SecurityAuthcProperties {
 	private String pathPattern = "/**";
 
 	/** Login URL: the address visited when no session exists. */
-	private String loginUrl = "/authz/login";;
-	private String loginUrlPatterns = "/login";;
+	private String loginUrl = "/authz/login";
+	private String loginUrlPatterns = "/login";
 	/** Redirect URL: the address to redirect to after the session is invalidated. */
 	private String redirectUrl = "/";
 	/** Home page: the path to redirect to after a successful login. */
@@ -122,5 +122,21 @@ public class SecurityOpenIDAuthcProperties extends SecurityAuthcProperties {
 	/** Maximum number of retry to login . */
 	private int retryTimesWhenAccessDenied = 3;
 	private boolean useForward = false;
+
+	/**
+	 * Returns the login URL: the address visited when no session exists.
+	 * @return the login URL
+	 */
+	public String getLoginUrl() {
+		return loginUrl;
+	}
+
+	/**
+	 * Sets the login URL.
+	 * @param loginUrl the login URL to set
+	 */
+	public void setLoginUrl(String loginUrl) {
+		this.loginUrl = loginUrl;
+	}
 
 }
