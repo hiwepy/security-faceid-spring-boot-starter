@@ -21,72 +21,136 @@ import org.springframework.security.boot.biz.userdetails.SecurityPrincipal;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * TODO
- * 
+ * Authenticated principal carrying face-recognition data. <p>Extends {@link SecurityPrincipal}
+ * with the face image and identifiers resolved during face-ID authentication.</p>
+ *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 @SuppressWarnings("serial")
 public class FaceIDPrincipal extends SecurityPrincipal {
 
 	/**
-	 * 人脸识别数据ID
+	 * Identifier of the face recognition record.
 	 */
 	protected String faceId;
 	/**
-	 * 人脸识别图片base64编码后的图片数据（图片的base64编码不包含图片头的，如data:image/jpg;base64,）
+	 * Base64-encoded face image data (without the data-URI prefix, e.g. without
+	 * {@code data:image/jpg;base64,}).
 	 */
 	protected String face;
 	/**
-	 * 人脸的类型：(LIVE:表示生活照;通常为手机、相机拍摄的人像图片、或从网络获取的人像图片等|IDCARD:表示身份证芯片照;二代身份证内置芯片中的人像照片|WATERMARK:表示带水印证件照;一般为带水印的小图，如公安网小图|CERT:表示证件照片;如拍摄的身份证、工卡、护照、学生证等证件图片); 默认LIVE
+	 * Face image type. One of:
+	 * <ul>
+	 *   <li>{@code LIVE}: live photo (phone/camera shot or internet image);</li>
+	 *   <li>{@code IDCARD}: identity-card chip photo;</li>
+	 *   <li>{@code WATERMARK}: watermarked document photo;</li>
+	 *   <li>{@code CERT}: document photo (ID card, badge, passport, student card, etc.).</li>
+	 * </ul>
+	 * Defaults to {@code LIVE}.
 	 */
 	protected String faceType;
 	/**
-	 * 人脸图片的唯一标识
+	 * Unique token of the face image.
 	 */
 	protected String faceToken;
 
+	/**
+	 * Constructs a principal with the given username, password and role names.
+	 * @param username the username
+	 * @param password the password
+	 * @param roles the role names
+	 */
 	public FaceIDPrincipal(String username, String password, String... roles) {
 		super(username, password, roles);
 	}
 
+	/**
+	 * Constructs a principal with the given username, password and granted authorities.
+	 * @param username the username
+	 * @param password the password
+	 * @param authorities the granted authorities
+	 */
 	public FaceIDPrincipal(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, authorities);
 	}
 
+	/**
+	 * Constructs a principal with full account-status flags.
+	 * @param username the username
+	 * @param password the password
+	 * @param enabled whether the account is enabled
+	 * @param accountNonExpired whether the account is non-expired
+	 * @param credentialsNonExpired whether the credentials are non-expired
+	 * @param accountNonLocked whether the account is non-locked
+	 * @param authorities the granted authorities
+	 */
 	public FaceIDPrincipal(String username, String password, boolean enabled, boolean accountNonExpired,
 			boolean credentialsNonExpired, boolean accountNonLocked,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 	}
 
+	/**
+	 * Returns the face-recognition record identifier.
+	 * @return the face record id
+	 */
 	public String getFaceId() {
 		return faceId;
 	}
 
+	/**
+	 * Sets the face-recognition record identifier.
+	 * @param faceId the face record id
+	 */
 	public void setFaceId(String faceId) {
 		this.faceId = faceId;
 	}
 
+	/**
+	 * Returns the base64-encoded face image.
+	 * @return the face image data
+	 */
 	public String getFace() {
 		return face;
 	}
 
+	/**
+	 * Sets the base64-encoded face image.
+	 * @param face the face image data
+	 */
 	public void setFace(String face) {
 		this.face = face;
 	}
 
+	/**
+	 * Returns the face image type.
+	 * @return the face image type
+	 */
 	public String getFaceType() {
 		return faceType;
 	}
 
+	/**
+	 * Sets the face image type.
+	 * @param faceType the face image type
+	 */
 	public void setFaceType(String faceType) {
 		this.faceType = faceType;
 	}
 
+	/**
+	 * Returns the unique face image token.
+	 * @return the face token
+	 */
 	public String getFaceToken() {
 		return faceToken;
 	}
 
+	/**
+	 * Sets the unique face image token.
+	 * @param faceToken the face token
+	 */
 	public void setFaceToken(String faceToken) {
 		this.faceToken = faceToken;
 	}

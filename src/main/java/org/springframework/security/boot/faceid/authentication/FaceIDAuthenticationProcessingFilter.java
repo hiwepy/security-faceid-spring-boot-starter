@@ -32,30 +32,51 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
+/**
+ * Processes a face-ID authentication request submitted as a multipart form. <p>Extracts the
+ * uploaded face image part and creates an unauthenticated {@link FaceIDAuthenticationToken}
+ * that is passed to the {@code AuthenticationManager} for verification.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class FaceIDAuthenticationProcessingFilter extends PostOnlyAuthenticationProcessingFilter {
 
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
+	/** Default name of the form part that carries the face image: "face". */
 	public static final String SPRING_SECURITY_FORM_FACE_KEY = "face";
 
     private String faceParameter = SPRING_SECURITY_FORM_FACE_KEY;
     private boolean postOnly = true;
-	
+
+    /**
+     * Constructs a filter that intercepts POST requests to {@code /faceid}.
+     */
     public FaceIDAuthenticationProcessingFilter() {
 		super(PathPatternRequestMatcher.pathPattern(HttpMethod.POST, "/faceid"));
     }
-    
+
+    /**
+     * Attempts to authenticate by reading the face image part from the request.
+     * @param request the HTTP request carrying the face image
+     * @param response the HTTP response
+     * @return the authenticated token produced by the authentication manager
+     * @throws AuthenticationException if no face image is found in the request or authentication fails
+     * @throws IOException if the face image part cannot be read
+     * @throws ServletException if the request part cannot be resolved
+     */
     @Override
     public Authentication doAttemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
- 
+
 		Part face = request.getPart(getFaceParameter());
-		
-	 	// 没有提供人脸数据
+
+		// No face image data provided
 		if(face == null) {
 			logger.debug("No face image found in request.");
 			throw new AuthenticationFaceNotFoundException("No face image found in request.");
 		}
-		
+
 		AbstractAuthenticationToken authRequest = new FaceIDAuthenticationToken(face.getInputStream());
 
 		// Allow subclasses to set the "details" property
@@ -77,19 +98,35 @@ public class FaceIDAuthenticationProcessingFilter extends PostOnlyAuthentication
 			AbstractAuthenticationToken authRequest) {
 		authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
 	}
-	
+
+	/**
+	 * Returns the name of the request part that carries the face image.
+	 * @return the face parameter name
+	 */
 	public String getFaceParameter() {
 		return faceParameter;
 	}
 
+	/**
+	 * Sets the name of the request part that carries the face image.
+	 * @param faceParameter the face parameter name
+	 */
 	public void setFaceParameter(String faceParameter) {
 		this.faceParameter = faceParameter;
 	}
 
+	/**
+	 * Returns whether only POST requests are accepted.
+	 * @return {@code true} if only POST is accepted
+	 */
 	public boolean isPostOnly() {
 		return postOnly;
 	}
 
+	/**
+	 * Sets whether only POST requests are accepted.
+	 * @param postOnly {@code true} to accept only POST requests
+	 */
 	public void setPostOnly(boolean postOnly) {
 		this.postOnly = postOnly;
 	}

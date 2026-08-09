@@ -34,6 +34,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Security authentication properties for the face-ID (OpenID-style) login flow. <p>Binds the
+ * {@code spring.security.jwt.authc} properties used to configure login, redirect, success,
+ * unauthorized and failure URLs as well as OpenID identifier matching.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 @ConfigurationProperties(SecurityOpenIDAuthcProperties.PREFIX)
 @Getter
 @Setter
@@ -43,19 +51,19 @@ public class SecurityOpenIDAuthcProperties extends SecurityAuthcProperties {
 	public static final String PREFIX = "spring.security.jwt.authc";
 	public static final String DEFAULT_CLAIMED_IDENTITY_FIELD = "openid_identifier";
 
-	/** Authorization Path Pattern */
+	/** Authorization path pattern. */
 	private String pathPattern = "/**";
-	
-	/** 登录地址：会话不存在时访问的地址 */
+
+	/** Login URL: the address visited when no session exists. */
 	private String loginUrl = "/authz/login";;
 	private String loginUrlPatterns = "/login";;
-	/** 重定向地址：会话注销后的重定向地址 */
+	/** Redirect URL: the address to redirect to after the session is invalidated. */
 	private String redirectUrl = "/";
-	/** 系统主页：登录成功后跳转路径 */
+	/** Home page: the path to redirect to after a successful login. */
 	private String successUrl = "/index";;
-	/** 未授权页面：无权限时的跳转路径 */
+	/** Unauthorized page: the path to redirect to when access is denied. */
 	private String unauthorizedUrl = "/error";
-	/** 异常页面：认证失败时的跳转路径 */
+	/** Failure page: the path to redirect to when authentication fails. */
 	private String failureUrl = "/error";
 
 	/** the regular expression for matching on OpenID's (i.e."https://www.google.com/.*", ".*yahoo.com.*", etc) */

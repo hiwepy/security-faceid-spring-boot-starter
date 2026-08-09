@@ -32,15 +32,27 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
+/**
+ * Web security filter configuration for face-ID authentication. <p>Registers the
+ * {@link FaceIDAuthenticationProcessingFilter} and wires the security chain (entry point,
+ * success/failure handlers, remember-me and session strategy) when the application is a web
+ * application and face-ID authentication is enabled.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 @Configuration
-@AutoConfigureBefore(name = { 
+@AutoConfigureBefore(name = {
 	"org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration"
 })
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix = SecurityFaceIDProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityOpenIDAuthcProperties.class, SecurityBizProperties.class })
 public class SecurityFaceIDFilterConfiguration {
-	
+
+	/**
+	 * Inner {@code WebSecurityConfigurerAdapter} that builds the face-ID security filter chain.
+	 */
 	@Configuration
 	@EnableConfigurationProperties({ SecurityFaceIDProperties.class, SecurityBizProperties.class })
 	@Order(Ordered.HIGHEST_PRECEDENCE + 3)
@@ -55,6 +67,21 @@ public class SecurityFaceIDFilterConfiguration {
     	private final RememberMeServices rememberMeServices;
 		private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
 	
+		/**
+		 * Constructs the face-ID web security configurer, resolving optional collaborators
+		 * from the Spring context via {@link ObjectProvider}.
+		 * @param bizProperties the common security business properties
+		 * @param sessionMgtProperties the session-management properties
+		 * @param authcProperties the face-ID authentication properties
+		 * @param localeContextProvider the locale-context filter provider
+		 * @param authenticationProvider the authentication-provider provider
+		 * @param authenticationListenerProvider the authentication-listener provider
+		 * @param authenticationEntryPointProvider the entry-point provider
+		 * @param authenticationSuccessHandlerProvider the success-handler provider
+		 * @param authenticationFailureHandlerProvider the failure-handler provider
+		 * @param rememberMeServicesProvider the remember-me services provider
+		 * @param sessionAuthenticationStrategyProvider the session-authentication-strategy provider
+		 */
 		public FaceIDWebSecurityConfigurerAdapter(
 
 				SecurityBizProperties bizProperties,
@@ -68,7 +95,7 @@ public class SecurityFaceIDFilterConfiguration {
    				ObjectProvider<MatchedAuthenticationSuccessHandler> authenticationSuccessHandlerProvider,
    				ObjectProvider<MatchedAuthenticationFailureHandler> authenticationFailureHandlerProvider,
    				ObjectProvider<RememberMeServices> rememberMeServicesProvider,
-				
+
 				ObjectProvider<SessionAuthenticationStrategy> sessionAuthenticationStrategyProvider) {
 			
 			super(bizProperties, sessionMgtProperties, authenticationProvider.stream().collect(Collectors.toList()));
@@ -86,6 +113,11 @@ public class SecurityFaceIDFilterConfiguration {
 		}
 
 		
+		/**
+		 * Builds the face-ID authentication filter, mapping bound properties onto it.
+		 * @return the configured {@link FaceIDAuthenticationProcessingFilter}
+		 * @throws Exception if the authentication manager cannot be resolved
+		 */
 		public FaceIDAuthenticationProcessingFilter authenticationProcessingFilter() throws Exception {
 	    	
 			FaceIDAuthenticationProcessingFilter authenticationFilter = new FaceIDAuthenticationProcessingFilter();
@@ -110,6 +142,11 @@ public class SecurityFaceIDFilterConfiguration {
 	        return authenticationFilter;
 	    }
 		
+		/**
+		 * Configures the {@link HttpSecurity} for the face-ID login flow.
+		 * @param http the security builder
+		 * @throws Exception if a configuration error occurs
+		 */
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 			
@@ -126,6 +163,11 @@ public class SecurityFaceIDFilterConfiguration {
 	    	
 		}
 		
+		/**
+		 * Configures the {@link WebSecurity} (e.g. ignored request paths).
+		 * @param web the web security builder
+		 * @throws Exception if a configuration error occurs
+		 */
 		@Override
 	    public void configure(WebSecurity web) throws Exception {
 	    	super.configure(web);

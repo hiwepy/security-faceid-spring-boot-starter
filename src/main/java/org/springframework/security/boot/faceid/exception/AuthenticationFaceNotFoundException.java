@@ -19,7 +19,10 @@ package org.springframework.security.boot.faceid.exception;
 import org.springframework.security.core.AuthenticationException;
 
 /**
+ * Thrown when no face image is present in an authentication request.
  *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 @SuppressWarnings("serial")
 public class AuthenticationFaceNotFoundException extends AuthenticationException {

@@ -16,25 +16,31 @@
 package org.springframework.security.boot.faceid.userdetails;
 
 /**
- * 人脸的类型
+ * Type of a face image. <p>Enumerates the supported categories of face images used
+ * during face recognition, ranging from everyday photos to identity-document photos.</p>
+ *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 public enum FaceType {
 
 	/**
-	 * 表示生活照：通常为手机、相机拍摄的人像图片、或从网络获取的人像图片等
+	 * Live photo: a portrait taken with a phone or camera, or obtained from the internet.
 	 */
 	LIVE,
 	/**
-	 * 表示身份证芯片照：二代身份证内置芯片中的人像照片
+	 * Identity-card chip photo: the portrait embedded in the chip of a second-generation
+	 * identity card.
 	 */
 	IDCARD,
 	/**
-	 * 表示带水印证件照：一般为带水印的小图，如公安网小图
+	 * Watermarked ID photo: usually a small watermarked image, e.g. a small image from a
+	 * public-security network.
 	 */
 	WATERMARK,
 	/**
-	 * 表示证件照片：如拍摄的身份证、工卡、护照、学生证等证件图片
+	 * Document photo: a photo of a document such as an identity card, employee badge,
+	 * passport or student card.
 	 */
 	CERT;
 

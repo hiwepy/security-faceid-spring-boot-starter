@@ -19,12 +19,21 @@ import org.springframework.security.boot.faceid.userdetails.FaceInfo;
 import org.springframework.security.core.Authentication;
 
 /**
- * TODO
+ * Strategy for resolving face information from an authentication request. <p>Implementations
+ * call an external face-recognition service to look up the {@link FaceInfo} that matches the
+ * face image supplied in the authentication object.</p>
+ *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 
 public interface FaceRecognitionProvider {
 
+	/**
+	 * Loads the face information associated with the given authentication request.
+	 * @param authentication the authentication request carrying the face image
+	 * @return the resolved face information, or {@code null} if no matching face is found
+	 */
 	FaceInfo loadFaceInfo(Authentication authentication);
-	
+
 }

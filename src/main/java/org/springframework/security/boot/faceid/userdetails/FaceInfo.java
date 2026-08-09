@@ -18,26 +18,37 @@ package org.springframework.security.boot.faceid.userdetails;
 import lombok.Data;
 
 /**
- * TODO
+ * Face recognition data. <p>Carries the face image and metadata produced or consumed by a
+ * {@code FaceRecognitionProvider} when authenticating a user via face recognition.</p>
+ *
  * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 @Data
 public class FaceInfo {
-	
+
 	/**
-	 * 人脸识别数据ID
+	 * Identifier of the face recognition record.
 	 */
 	protected String faceId;
 	/**
-	 * 人脸识别图片base64编码后的图片数据（图片的base64编码不包含图片头的，如data:image/jpg;base64,）
+	 * Base64-encoded face image data (without the data-URI prefix, e.g. without
+	 * {@code data:image/jpg;base64,}).
 	 */
 	protected String face;
 	/**
-	 * 人脸的类型：(LIVE:表示生活照;通常为手机、相机拍摄的人像图片、或从网络获取的人像图片等|IDCARD:表示身份证芯片照;二代身份证内置芯片中的人像照片|WATERMARK:表示带水印证件照;一般为带水印的小图，如公安网小图|CERT:表示证件照片;如拍摄的身份证、工卡、护照、学生证等证件图片); 默认LIVE
+	 * Face image type. One of:
+	 * <ul>
+	 *   <li>{@code LIVE}: live photo (phone/camera shot or internet image);</li>
+	 *   <li>{@code IDCARD}: identity-card chip photo;</li>
+	 *   <li>{@code WATERMARK}: watermarked document photo;</li>
+	 *   <li>{@code CERT}: document photo (ID card, badge, passport, student card, etc.).</li>
+	 * </ul>
+	 * Defaults to {@code LIVE}.
 	 */
 	protected String faceType;
 	/**
-	 * 人脸图片的唯一标识
+	 * Unique token of the face image.
 	 */
 	protected String faceToken;
 

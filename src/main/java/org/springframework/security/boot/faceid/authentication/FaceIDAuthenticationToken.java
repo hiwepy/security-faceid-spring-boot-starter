@@ -20,19 +20,37 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 
+/**
+ * Authentication token for face-ID authentication. <p>The unauthenticated variant carries the
+ * uploaded face image stream as its principal, while the authenticated variant carries the
+ * resolved principal (typically a {@code SecurityPrincipal}) together with its authorities.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class FaceIDAuthenticationToken extends AbstractAuthenticationToken {
-    
+
     private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-    
+
     private final Object principal;
     private Object credentials;
 
+    /**
+     * Creates an unauthenticated token carrying the given face image principal.
+     * @param principal the face image (e.g. an input stream or {@code FaceInfo})
+     */
     public FaceIDAuthenticationToken(Object principal) {
 		super((Collection<? extends GrantedAuthority>) null);
         this.principal = principal;
         setAuthenticated(false);
     }
-    
+
+    /**
+     * Creates an authenticated token with the given principal, credentials and authorities.
+     * @param principal the authenticated principal
+     * @param credentials the credentials
+     * @param authorities the granted authorities
+     */
     public FaceIDAuthenticationToken(Object principal,  Object credentials, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
@@ -43,14 +61,27 @@ public class FaceIDAuthenticationToken extends AbstractAuthenticationToken {
     // ~ Methods
     // ========================================================================================================
 
+    /**
+     * Returns the credentials (typically {@code null} after authentication).
+     * @return the credentials
+     */
     public Object getCredentials() {
         return this.credentials;
     }
 
+    /**
+     * Returns the authenticated or to-be-authenticated principal.
+     * @return the principal
+     */
     public Object getPrincipal() {
         return this.principal;
     }
 
+    /**
+     * Always rejects setting this token to trusted directly; use the authenticated constructor instead.
+     * @param isAuthenticated must be {@code false}
+     * @throws IllegalArgumentException if {@code isAuthenticated} is {@code true}
+     */
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         if (isAuthenticated) {
             throw new IllegalArgumentException(
@@ -60,6 +91,9 @@ public class FaceIDAuthenticationToken extends AbstractAuthenticationToken {
         super.setAuthenticated(false);
     }
 
+    /**
+     * Clears the credentials so they can be garbage collected.
+     */
     @Override
     public void eraseCredentials() {
         super.eraseCredentials();

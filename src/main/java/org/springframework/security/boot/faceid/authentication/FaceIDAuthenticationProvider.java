@@ -19,14 +19,28 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.util.Assert;
 
+/**
+ * Authenticates a face-ID authentication request. <p>Delegates face matching to a
+ * {@link FaceRecognitionProvider}, loads the corresponding user details via a
+ * {@link UserDetailsServiceAdapter} and validates the account status before returning a
+ * fully authenticated {@link FaceIDAuthenticationToken}.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 public class FaceIDAuthenticationProvider implements AuthenticationProvider {
-	
+
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 	private final Logger logger = LoggerFactory.getLogger(getClass());
     private final FaceRecognitionProvider faceRecognitionProvider;
     private final UserDetailsServiceAdapter userDetailsService;
     private UserDetailsChecker userDetailsChecker = new AccountStatusUserDetailsChecker();
-    
+
+    /**
+     * Constructs a provider with the given face-recognition strategy and user-details service.
+     * @param faceRecognitionProvider the strategy used to resolve face information
+     * @param userDetailsService the adapter used to load user details
+     */
     public FaceIDAuthenticationProvider(final FaceRecognitionProvider faceRecognitionProvider,
     		final UserDetailsServiceAdapter userDetailsService) {
     	this.faceRecognitionProvider = faceRecognitionProvider;
@@ -34,12 +48,13 @@ public class FaceIDAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * 
-     * <p>完成匹配Token的认证，这里返回的对象最终会通过：SecurityContextHolder.getContext().setAuthentication(authResult); 放置在上下文中</p>
+     * Authenticates the given token.
+     * <p>The returned object is ultimately stored in the security context via
+     * {@code SecurityContextHolder.getContext().setAuthentication(authResult)}.</p>
      * @author [@Loong Wan](https://github.com/loong10k)
-     * @param authentication  {@link FaceIDAuthenticationToken IdentityCodeAuthenticationToken} 对象
-     * @return 认证结果{@link Authentication}对象
-     * @throws AuthenticationException  认证失败会抛出异常
+     * @param authentication the {@link FaceIDAuthenticationToken} to authenticate
+     * @return the fully authenticated {@link Authentication} object
+     * @throws AuthenticationException if authentication fails
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -79,25 +94,46 @@ public class FaceIDAuthenticationProvider implements AuthenticationProvider {
         return authenticationToken;
     }
 
+    /**
+     * Returns whether this provider supports the given authentication token type.
+     * @param authentication the token type to check
+     * @return {@code true} if the token is assignable to {@link FaceIDAuthenticationToken}
+     */
     @Override
     public boolean supports(Class<?> authentication) {
         return (FaceIDAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
+	/**
+	 * Sets the checker used to validate the account status of loaded users.
+	 * @param userDetailsChecker the user-details checker
+	 */
 	public void setUserDetailsChecker(UserDetailsChecker userDetailsChecker) {
 		this.userDetailsChecker = userDetailsChecker;
 	}
 
+	/**
+	 * Returns the checker used to validate the account status of loaded users.
+	 * @return the user-details checker
+	 */
 	public UserDetailsChecker getUserDetailsChecker() {
 		return userDetailsChecker;
 	}
 
+	/**
+	 * Returns the face-recognition strategy used by this provider.
+	 * @return the face-recognition provider
+	 */
 	public FaceRecognitionProvider getFaceRecognitionProvider() {
 		return faceRecognitionProvider;
 	}
 
+	/**
+	 * Returns the user-details adapter used by this provider.
+	 * @return the user-details service
+	 */
 	public UserDetailsServiceAdapter getUserDetailsService() {
 		return userDetailsService;
 	}
-    
+
 }

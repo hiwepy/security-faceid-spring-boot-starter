@@ -22,18 +22,36 @@ import org.springframework.security.core.AuthenticationException;
 import com.alibaba.fastjson.JSONObject;
 
 /**
- * Post认证请求失败后的处理实现
+ * Failure handler for face-ID authentication. <p>Matches face-related exceptions and writes a
+ * JSON {@link AuthResponse} describing the specific face error (missing face image or unknown
+ * face id).</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
  */
 public class FaceIDMatchedAuthenticationFailureHandler implements MatchedAuthenticationFailureHandler {
 
 	protected MessageSourceAccessor messages = SpringSecurityBizMessageSource.getAccessor();
-	 
+
+	/**
+	 * Returns whether this handler handles the given exception.
+	 * @param e the authentication exception to check
+	 * @return {@code true} if the exception is face-related
+	 */
 	@Override
 	public boolean supports(AuthenticationException e) {
 		return SubjectUtils.isAssignableFrom(e.getClass(), AuthenticationFaceNotFoundException.class,
 				AuthenticationFaceIDNotFoundException.class);
 	}
-	
+
+	/**
+	 * Writes a JSON response describing the authentication failure.
+	 * @param request the HTTP request that caused the failure
+	 * @param response the HTTP response to write to
+	 * @param e the authentication exception
+	 * @throws IOException if writing the response fails
+	 * @throws ServletException if a servlet error occurs
+	 */
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException e) throws IOException, ServletException {

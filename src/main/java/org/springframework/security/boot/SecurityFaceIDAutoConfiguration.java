@@ -11,22 +11,44 @@ import org.springframework.security.boot.faceid.authentication.FaceIDMatchedAuth
 import org.springframework.security.boot.faceid.authentication.FaceIDMatchedAuthenticationFailureHandler;
 import org.springframework.security.boot.faceid.authentication.FaceRecognitionProvider;
 
+/**
+ * Auto-configuration for face-ID authentication. <p>Activated when
+ * {@code spring.security.faceid.enabled=true}, it registers the face-ID authentication
+ * provider, entry point and failure handler beans.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 1.0.0
+ */
 @Configuration
 @AutoConfigureBefore(SecurityBizAutoConfiguration.class)
 @ConditionalOnProperty(prefix = SecurityFaceIDProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({ SecurityFaceIDProperties.class })
 public class SecurityFaceIDAutoConfiguration {
 
+	/**
+	 * Registers the face-ID authentication entry point.
+	 * @return a new {@link FaceIDMatchedAuthenticationEntryPoint}
+	 */
 	@Bean
 	public FaceIDMatchedAuthenticationEntryPoint idcMatchedAuthenticationEntryPoint() {
 		return new FaceIDMatchedAuthenticationEntryPoint();
 	}
 
+	/**
+	 * Registers the face-ID authentication failure handler.
+	 * @return a new {@link FaceIDMatchedAuthenticationFailureHandler}
+	 */
 	@Bean
 	public FaceIDMatchedAuthenticationFailureHandler idcMatchedAuthenticationFailureHandler() {
 		return new FaceIDMatchedAuthenticationFailureHandler();
 	}
 
+	/**
+	 * Registers the face-ID authentication provider.
+	 * @param faceRecognitionProvider the face-recognition strategy
+	 * @param userDetailsService the user-details adapter
+	 * @return a new {@link FaceIDAuthenticationProvider}
+	 */
 	@Bean
 	public FaceIDAuthenticationProvider idcCodeAuthenticationProvider(FaceRecognitionProvider faceRecognitionProvider,
 			UserDetailsServiceAdapter userDetailsService) {
