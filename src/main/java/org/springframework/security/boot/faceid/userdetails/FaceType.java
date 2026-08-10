@@ -19,7 +19,7 @@ package org.springframework.security.boot.faceid.userdetails;
  * Type of a face image. <p>Enumerates the supported categories of face images used
  * during face recognition, ranging from everyday photos to identity-document photos.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public enum FaceType {

@@ -10,7 +10,7 @@ import lombok.ToString;
  * Configuration properties for face-ID security. <p>Binds the {@code spring.security.faceid}
  * prefix and controls whether face-ID authentication is enabled.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = SecurityFaceIDProperties.PREFIX)

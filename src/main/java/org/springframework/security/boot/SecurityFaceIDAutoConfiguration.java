@@ -16,7 +16,7 @@ import org.springframework.security.boot.faceid.authentication.FaceRecognitionPr
  * {@code spring.security.faceid.enabled=true}, it registers the face-ID authentication
  * provider, entry point and failure handler beans.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Configuration

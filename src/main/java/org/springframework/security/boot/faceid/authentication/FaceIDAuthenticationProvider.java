@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  * {@link UserDetailsServiceAdapter} and validates the account status before returning a
  * fully authenticated {@link FaceIDAuthenticationToken}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class FaceIDAuthenticationProvider implements AuthenticationProvider {
@@ -51,7 +51,7 @@ public class FaceIDAuthenticationProvider implements AuthenticationProvider {
      * Authenticates the given token.
      * <p>The returned object is ultimately stored in the security context via
      * {@code SecurityContextHolder.getContext().setAuthentication(authResult)}.</p>
-     * @author [@Loong Wan](https://github.com/loong10k)
+     * @author <a href="https://github.com/loong10k">Loong Wan</a>
      * @param authentication the {@link FaceIDAuthenticationToken} to authenticate
      * @return the fully authenticated {@link Authentication} object
      * @throws AuthenticationException if authentication fails

@@ -25,7 +25,7 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
  * uploaded face image stream as its principal, while the authenticated variant carries the
  * resolved principal (typically a {@code SecurityPrincipal}) together with its authorities.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class FaceIDAuthenticationToken extends AbstractAuthenticationToken {

@@ -21,7 +21,7 @@ import lombok.Data;
  * Face recognition data. <p>Carries the face image and metadata produced or consumed by a
  * {@code FaceRecognitionProvider} when authenticating a user via face recognition.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Data

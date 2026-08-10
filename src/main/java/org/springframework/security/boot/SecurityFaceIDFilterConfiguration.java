@@ -38,7 +38,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
  * success/failure handlers, remember-me and session strategy) when the application is a web
  * application and face-ID authentication is enabled.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Configuration

@@ -21,7 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 /**
  * Thrown when no face record can be found for a supplied face image during authentication.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @SuppressWarnings("serial")

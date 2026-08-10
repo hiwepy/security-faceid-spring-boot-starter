@@ -23,7 +23,7 @@ import org.springframework.security.core.Authentication;
  * call an external face-recognition service to look up the {@link FaceInfo} that matches the
  * face image supplied in the authentication object.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 

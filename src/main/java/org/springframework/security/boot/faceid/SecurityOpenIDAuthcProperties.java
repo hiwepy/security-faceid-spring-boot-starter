@@ -39,7 +39,7 @@ import lombok.ToString;
  * {@code spring.security.jwt.authc} properties used to configure login, redirect, success,
  * unauthorized and failure URLs as well as OpenID identifier matching.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @ConfigurationProperties(SecurityOpenIDAuthcProperties.PREFIX)

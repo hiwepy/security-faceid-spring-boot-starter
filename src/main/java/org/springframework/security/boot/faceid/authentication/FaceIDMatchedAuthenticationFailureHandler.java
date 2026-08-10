@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONObject;
  * JSON {@link AuthResponse} describing the specific face error (missing face image or unknown
  * face id).</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class FaceIDMatchedAuthenticationFailureHandler implements MatchedAuthenticationFailureHandler {

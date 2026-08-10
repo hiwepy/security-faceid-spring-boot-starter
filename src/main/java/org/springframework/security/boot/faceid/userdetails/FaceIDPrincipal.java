@@ -24,7 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
  * Authenticated principal carrying face-recognition data. <p>Extends {@link SecurityPrincipal}
  * with the face image and identifiers resolved during face-ID authentication.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @SuppressWarnings("serial")
