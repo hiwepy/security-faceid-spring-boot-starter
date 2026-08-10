@@ -17,7 +17,7 @@ package org.springframework.security.boot.faceid.userdetails;
 
 /**
  * 人脸的类型
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 public enum FaceType {
 
