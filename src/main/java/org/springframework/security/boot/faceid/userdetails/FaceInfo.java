@@ -52,15 +52,61 @@ public class FaceInfo {
 	 */
 	protected String faceToken;
 
+	/**
+	 * Returns the face id.
+	 *
+	 * @return the face id
+	 */
 	public String getFaceId() { return faceId; }
+	/**
+	 * Sets the face id.
+	 *
+	 * @param faceId the face id
+	 */
 	public void setFaceId(String faceId) { this.faceId = faceId; }
+	/**
+	 * Returns the face.
+	 *
+	 * @return the face
+	 */
 	public String getFace() { return face; }
+	/**
+	 * Sets the face.
+	 *
+	 * @param face the face
+	 */
 	public void setFace(String face) { this.face = face; }
+	/**
+	 * Returns the face type.
+	 *
+	 * @return the face type
+	 */
 	public String getFaceType() { return faceType; }
+	/**
+	 * Sets the face type.
+	 *
+	 * @param faceType the face type
+	 */
 	public void setFaceType(String faceType) { this.faceType = faceType; }
+	/**
+	 * Returns the face token.
+	 *
+	 * @return the face token
+	 */
 	public String getFaceToken() { return faceToken; }
+	/**
+	 * Sets the face token.
+	 *
+	 * @param faceToken the face token
+	 */
 	public void setFaceToken(String faceToken) { this.faceToken = faceToken; }
 
+	/**
+	 * Determines whether equals.
+	 *
+	 * @param o the o
+	 * @return the result
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -72,11 +118,21 @@ public class FaceInfo {
 				&& java.util.Objects.equals(faceToken, faceInfo.faceToken);
 	}
 
+	/**
+	 * hash Code.
+	 *
+	 * @return the result
+	 */
 	@Override
 	public int hashCode() {
 		return java.util.Objects.hash(faceId, face, faceType, faceToken);
 	}
 
+	/**
+	 * to String.
+	 *
+	 * @return the result
+	 */
 	@Override
 	public String toString() {
 		return "FaceInfo{faceId='" + faceId + "', face='" + face + "', faceType='" + faceType + "', faceToken='" + faceToken + "'}";
